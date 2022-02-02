@@ -186,10 +186,19 @@ class RegistryImpl(
     }
 
     override fun getPipelineBehavior(): PipelineBehavior {
-        return pipelineSet.map { it.get() }.singleOrNull { it !is PipelineBehaviorImpl } ?: PipelineBehaviorImpl()
+        return pipelineSet.map { it.get() }.singleOrNull() ?: object : PipelineBehavior {
+            override fun <TRequest, TResponse> process(request: TRequest, act: () -> TResponse): TResponse {
+                return act()
+            }
+        }
+
     }
 
     override fun getAsyncPipelineBehavior(): AsyncPipelineBehavior {
-        return asyncPipelineSet.map { it.get() }.singleOrNull { it !is AsyncPipelineBehaviorImpl } ?: AsyncPipelineBehaviorImpl()
+        return asyncPipelineSet.map { it.get() }.singleOrNull() ?: object  : AsyncPipelineBehavior {
+            override suspend fun <TRequest, TResponse> process(request: TRequest, act: suspend () -> TResponse): TResponse {
+                return act()
+            }
+        }
     }
 }
