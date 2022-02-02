@@ -13,15 +13,19 @@ class RegistryImpl(
 ) : Registry {
     private val queryMap = HashMap<Class<out Query<*>>, QueryProvider<QueryHandler<*, *>>>()
     private val commandMap = HashMap<Class<out Command>, CommandProvider<CommandHandler<*>>>()
-    private val notificationMap = HashMap<Class<out Notification>, MutableList<NotificationProvider<NotificationHandler<*>>>>()
+    private val notificationMap =
+        HashMap<Class<out Notification>, MutableList<NotificationProvider<NotificationHandler<*>>>>()
     private val pipelineSet = HashSet<PipelineProvider<PipelineBehavior>>()
-    private val commandWithResultMap = HashMap<Class<out CommandWithResult<*>>, CommandWithResultProvider<CommandWithResultHandler<*, *>>>()
+    private val commandWithResultMap =
+        HashMap<Class<out CommandWithResult<*>>, CommandWithResultProvider<CommandWithResultHandler<*, *>>>()
 
     private val asyncCommandMap = HashMap<Class<out Command>, AsyncCommandProvider<AsyncCommandHandler<*>>>()
     private val asyncQueryMap = HashMap<Class<out Query<*>>, AsyncQueryProvider<AsyncQueryHandler<*, *>>>()
-    private val asyncNotificationMap = HashMap<Class<out Notification>, MutableList<AsyncNotificationProvider<AsyncNotificationHandler<*>>>>()
+    private val asyncNotificationMap =
+        HashMap<Class<out Notification>, MutableList<AsyncNotificationProvider<AsyncNotificationHandler<*>>>>()
     private val asyncPipelineSet = HashSet<AsyncPipelineProvider<AsyncPipelineBehavior>>()
-    private val asyncCommandWithResultMap = HashMap<Class<out CommandWithResult<*>>, AsyncCommandWithResultProvider<AsyncCommandWithResultHandler<*, *>>>()
+    private val asyncCommandWithResultMap =
+        HashMap<Class<out CommandWithResult<*>>, AsyncCommandWithResultProvider<AsyncCommandWithResultHandler<*, *>>>()
 
     init {
         dependencyProvider.getSubTypesOf(QueryHandler::class.java).forEach {
@@ -49,7 +53,8 @@ class RegistryImpl(
                 if ((genericInterface is ParameterizedType) && genericInterface.rawType as Class<*> == CommandWithResultHandler::class.java) {
                     val commandClazz = genericInterface.actualTypeArguments[0]
 
-                    commandWithResultMap[commandClazz as Class<out CommandWithResult<*>>] = CommandWithResultProvider(dependencyProvider, it)
+                    commandWithResultMap[commandClazz as Class<out CommandWithResult<*>>] =
+                        CommandWithResultProvider(dependencyProvider, it)
                 }
             }
         }
@@ -90,7 +95,8 @@ class RegistryImpl(
                 if ((genericInterface is ParameterizedType) && genericInterface.rawType as Class<*> == AsyncCommandWithResultHandler::class.java) {
                     val commandClazz = genericInterface.actualTypeArguments[0]
 
-                    asyncCommandWithResultMap[commandClazz as Class<out CommandWithResult<*>>] = AsyncCommandWithResultProvider(dependencyProvider, it)
+                    asyncCommandWithResultMap[commandClazz as Class<out CommandWithResult<*>>] =
+                        AsyncCommandWithResultProvider(dependencyProvider, it)
                 }
             }
         }
@@ -180,10 +186,10 @@ class RegistryImpl(
     }
 
     override fun getPipelineBehavior(): PipelineBehavior {
-        return pipelineSet.firstOrNull()?.get() ?: PipelineBehaviorImpl()
+        return pipelineSet.map { it.get() }.singleOrNull { it !is PipelineBehaviorImpl } ?: PipelineBehaviorImpl()
     }
 
     override fun getAsyncPipelineBehavior(): AsyncPipelineBehavior {
-        return asyncPipelineSet.firstOrNull()?.get() ?: AsyncPipelineBehaviorImpl()
+        return asyncPipelineSet.map { it.get() }.singleOrNull { it !is AsyncPipelineBehaviorImpl } ?: AsyncPipelineBehaviorImpl()
     }
 }
