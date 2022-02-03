@@ -35,7 +35,8 @@ class NotificationHandlerTest {
     @Test
     fun `notification handler should be called`() {
         val pingHandler = PingHandler()
-        val dependencies: HashMap<Class<*>, Any> = hashMapOf(Pair(PingHandler::class.java, pingHandler), Pair(PipelineBehaviorImpl::class.java, PipelineBehaviorImpl()))
+        val pipeline = MyPipelineBehavior()
+        val dependencies: HashMap<Class<*>, Any> = hashMapOf(Pair(PingHandler::class.java, pingHandler), Pair(MyPipelineBehavior::class.java, pipeline))
         val provider = ManuelDependencyProvider(dependencies)
         val bus: CommandBus = CommandBusBuilder(provider).build()
         bus.publishNotification(Ping())
@@ -50,7 +51,8 @@ class NotificationHandlerTest {
     fun `async notification handler should be called`() = runBlocking {
         val pingHandler = AnAsyncPingHandler()
         val anotherPingHandler = AnotherAsyncPingHandler()
-        val dependencies: HashMap<Class<*>, Any> = hashMapOf(Pair(AnAsyncPingHandler::class.java, pingHandler), Pair(AnotherAsyncPingHandler::class.java, anotherPingHandler), Pair(AsyncPipelineBehaviorImpl::class.java, AsyncPipelineBehaviorImpl()))
+        val pipeline = MyAsyncPipelineBehavior()
+        val dependencies: HashMap<Class<*>, Any> = hashMapOf(Pair(AnAsyncPingHandler::class.java, pingHandler), Pair(AnotherAsyncPingHandler::class.java, anotherPingHandler), Pair(MyAsyncPipelineBehavior::class.java, pipeline))
         val provider = ManuelDependencyProvider(dependencies)
         val bus: CommandBus = CommandBusBuilder(provider).build()
         bus.publishNotificationAsync(ExtendedPing())

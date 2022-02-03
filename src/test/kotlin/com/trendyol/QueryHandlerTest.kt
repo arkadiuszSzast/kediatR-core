@@ -10,15 +10,11 @@ import kotlin.test.assertTrue
 
 class QueryHandlerTest {
 
-    private val behaviors: HashMap<Class<*>, Any> = hashMapOf(
-        Pair(AsyncPipelineBehaviorImpl::class.java, AsyncPipelineBehaviorImpl()),
-        Pair(PipelineBehaviorImpl::class.java, PipelineBehaviorImpl())
-    )
-
     @Test
     fun `queryHandler should retrieve result`() {
         val handler = TestQueryHandler()
-        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(TestQueryHandler::class.java, handler), Pair(PipelineBehaviorImpl::class.java, PipelineBehaviorImpl()))
+        val pipeline = MyPipelineBehavior()
+        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(TestQueryHandler::class.java, handler), Pair(MyPipelineBehavior::class.java, pipeline))
         val provider = ManuelDependencyProvider(handlers)
         val bus: CommandBus = CommandBusBuilder(provider).build()
 
@@ -32,7 +28,9 @@ class QueryHandlerTest {
     @Test
     fun `async queryHandler should retrieve result`() = runBlocking {
         val handler = AsyncTestQueryHandler()
-        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(AsyncTestQueryHandler::class.java, handler), Pair(AsyncPipelineBehaviorImpl::class.java, AsyncPipelineBehaviorImpl()))
+        val pipeline = MyAsyncPipelineBehavior()
+        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(AsyncTestQueryHandler::class.java, handler), Pair(MyAsyncPipelineBehavior::class.java, pipeline))
+
         val provider = ManuelDependencyProvider(handlers)
         val bus: CommandBus = CommandBusBuilder(provider).build()
         val result = bus.executeQueryAsync(TestQuery(1))
@@ -44,7 +42,9 @@ class QueryHandlerTest {
 
     @Test
     fun `should throw exception if given async query has not been registered before`() {
-        val provider = ManuelDependencyProvider(behaviors)
+        val pipeline = MyAsyncPipelineBehavior()
+
+        val provider = ManuelDependencyProvider(hashMapOf(Pair(MyAsyncPipelineBehavior::class.java, pipeline)))
         val bus: CommandBus = CommandBusBuilder(provider).build()
 
         val exception = assertFailsWith(HandlerNotFoundException::class) {
@@ -59,7 +59,9 @@ class QueryHandlerTest {
 
     @Test
     fun `should throw exception if given query has not been registered before`() {
-        val provider = ManuelDependencyProvider(behaviors)
+        val pipeline = MyPipelineBehavior()
+
+        val provider = ManuelDependencyProvider(hashMapOf(Pair(MyPipelineBehavior::class.java, pipeline)))
         val bus: CommandBus = CommandBusBuilder(provider).build()
 
         val exception = assertFailsWith(HandlerNotFoundException::class) {

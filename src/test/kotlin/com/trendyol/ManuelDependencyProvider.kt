@@ -1,5 +1,6 @@
 package com.trendyol
 
+import com.trendyol.kediatr.AsyncPipelineBehavior
 import com.trendyol.kediatr.DependencyProvider
 
 class ManuelDependencyProvider(

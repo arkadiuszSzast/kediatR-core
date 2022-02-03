@@ -19,15 +19,11 @@ class CommandHandlerTest {
         asyncTestCounter = 0
     }
 
-    private val behaviors: HashMap<Class<*>, Any> = hashMapOf(
-        Pair(AsyncPipelineBehaviorImpl::class.java, AsyncPipelineBehaviorImpl()),
-        Pair(PipelineBehaviorImpl::class.java, PipelineBehaviorImpl())
-    )
-
     @Test
     fun `commandHandler should be fired`() {
         val handler = MyCommandHandler()
-        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(MyCommandHandler::class.java, handler), Pair(PipelineBehaviorImpl::class.java, PipelineBehaviorImpl()))
+        val pipeline = MyPipelineBehavior()
+        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(MyCommandHandler::class.java, handler), Pair(MyPipelineBehavior::class.java, pipeline))
         val provider = ManuelDependencyProvider(handlers)
         val bus: CommandBus = CommandBusBuilder(provider).build()
         bus.executeCommand(MyCommand())
@@ -40,7 +36,8 @@ class CommandHandlerTest {
     @Test
     fun `async commandHandler should be fired`() = runBlocking {
         val handler = AsyncMyCommandHandler()
-        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(AsyncMyCommandHandler::class.java, handler), Pair(AsyncPipelineBehaviorImpl::class.java, AsyncPipelineBehaviorImpl()))
+        val pipeline = MyAsyncPipelineBehavior()
+        val handlers: HashMap<Class<*>, Any> = hashMapOf(Pair(AsyncMyCommandHandler::class.java, handler), Pair(MyAsyncPipelineBehavior::class.java, pipeline))
         val provider = ManuelDependencyProvider(handlers)
         val bus: CommandBus = CommandBusBuilder(provider).build()
         bus.executeCommandAsync(MyAsyncCommand())
@@ -52,7 +49,8 @@ class CommandHandlerTest {
 
     @Test
     fun `should throw exception if given async command has not been registered before`() {
-        val provider = ManuelDependencyProvider(behaviors)
+        val pipeline = MyAsyncPipelineBehavior()
+        val provider = ManuelDependencyProvider(hashMapOf(Pair(MyAsyncPipelineBehavior::class.java, pipeline)))
         val bus: CommandBus = CommandBusBuilder(provider).build()
 
         val exception = assertFailsWith(HandlerNotFoundException::class) {
@@ -67,7 +65,9 @@ class CommandHandlerTest {
 
     @Test
     fun `should throw exception if given command has not been registered before`() {
-        val provider = ManuelDependencyProvider(behaviors)
+        val pipeline = MyPipelineBehavior()
+        val provider = ManuelDependencyProvider(hashMapOf(Pair(MyPipelineBehavior::class.java, pipeline)))
+
         val bus: CommandBus = CommandBusBuilder(provider).build()
 
         val exception = assertFailsWith(HandlerNotFoundException::class) {
