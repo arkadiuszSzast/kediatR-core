@@ -79,9 +79,9 @@ class CommandHandlerTest {
     }
 }
 
-class NonExistCommand : Command
+class NonExistCommand(override val commandMetadata: CommandMetadata? = null) : Command
 
-class MyCommand : Command
+class MyCommand(override val commandMetadata: CommandMetadata? = null) : Command
 
 class MyCommandHandler(
 ) : CommandHandler<MyCommand> {
@@ -90,7 +90,7 @@ class MyCommandHandler(
     }
 }
 
-class MyAsyncCommand : Command
+class MyAsyncCommand(override val commandMetadata: CommandMetadata? = null) : Command
 
 class AsyncMyCommandHandler : AsyncCommandHandler<MyAsyncCommand> {
     override suspend fun handleAsync(command: MyAsyncCommand) {
