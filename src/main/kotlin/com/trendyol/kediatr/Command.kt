@@ -8,5 +8,5 @@ package com.trendyol.kediatr
  * @see AsyncCommandHandler
  */
 interface Command {
-    val commandMetadata: CommandMetadata?
+    val metadata: CommandMetadata?
 }

@@ -79,8 +79,8 @@ class CommandWithResultHandlerTest {
 }
 
 class Result
-class NonExistCommandR(override val commandMetadata: CommandMetadata? = null) : Command
-class MyCommandR(override val commandMetadata: CommandMetadata? = null) : CommandWithResult<Result>
+class NonExistCommandR(override val metadata: CommandMetadata? = null) : Command
+class MyCommandR(override val metadata: CommandMetadata? = null) : CommandWithResult<Result>
 
 class MyCommandRHandler : CommandWithResultHandler<MyCommandR, Result> {
     override fun handle(command: MyCommandR): Result {
@@ -90,7 +90,7 @@ class MyCommandRHandler : CommandWithResultHandler<MyCommandR, Result> {
     }
 }
 
-class MyAsyncCommandR(override val commandMetadata: CommandMetadata? = null) : CommandWithResult<Result>
+class MyAsyncCommandR(override val metadata: CommandMetadata? = null) : CommandWithResult<Result>
 
 class AsyncMyCommandRHandler : AsyncCommandWithResultHandler<MyAsyncCommandR, Result> {
     override suspend fun handleAsync(command: MyAsyncCommandR): Result {

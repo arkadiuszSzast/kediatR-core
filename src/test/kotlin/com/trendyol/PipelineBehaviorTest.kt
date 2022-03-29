@@ -46,7 +46,7 @@ class PipelineBehaviorTest {
     }
 }
 
-class MyBrokenCommand(override val commandMetadata: CommandMetadata? = null) : Command
+class MyBrokenCommand(override val metadata: CommandMetadata? = null) : Command
 
 class MyBrokenHandler : CommandHandler<MyBrokenCommand> {
     override fun handle(command: MyBrokenCommand) {

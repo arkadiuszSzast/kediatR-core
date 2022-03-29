@@ -8,5 +8,5 @@ package com.trendyol.kediatr
  * @see AsyncCommandHandler
  */
 interface CommandWithResult<TResult> {
-    val commandMetadata: CommandMetadata?
+    val metadata: CommandMetadata?
 }
